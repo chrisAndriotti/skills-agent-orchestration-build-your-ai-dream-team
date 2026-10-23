@@ -1,0 +1,36 @@
+{
+  "projects": [
+    {
+      "name": "Contributor Onboarding",
+      "owner": "Mona Patel",
+      "status": "Active",
+      "recentActivity": "Published the first draft of the contributor quick-start guide.",
+      "priority": "High",
+      "summary": "Help new contributors find the right tools, people, and first task without guesswork."
+    },
+    {
+      "name": "Community Insights",
+      "owner": "Jordan Lee",
+      "status": "In progress",
+      "recentActivity": "Reviewed feedback from the latest community listening session.",
+      "priority": "Medium",
+      "summary": "Turn community feedback into practical improvements and share back what changed."
+    },
+    {
+      "name": "Release Readiness",
+      "owner": "Sam Rivera",
+      "status": "Planning",
+      "recentActivity": "Collected the open questions for the next release checklist.",
+      "priority": "High",
+      "summary": "Make release steps predictable so contributors can spot blockers early and help resolve them."
+    },
+    {
+      "name": "Documentation Refresh",
+      "owner": "Avery Chen",
+      "status": "Active",
+      "recentActivity": "Updated setup instructions and flagged two pages for contributor review.",
+      "priority": "Low",
+      "summary": "Keep project guidance easy to follow, current, and welcoming to first-time contributors."
+    }
+  ]
+}

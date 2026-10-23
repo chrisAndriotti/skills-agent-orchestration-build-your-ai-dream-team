@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A quick overview of project ownership, status, activity, and priorities.">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="dashboard">
+      <header class="dashboard__header">
+        <div>
+          <p>Team overview</p>
+          <h1>Project Pulse</h1>
+          <p>A clear snapshot of what the team is building and where contributors can help.</p>
+        </div>
+      </header>
+
+      <p class="dashboard__message" role="status" aria-live="polite">Loading project updates…</p>
+      <section class="dashboard__grid" aria-label="Projects" aria-busy="true"></section>
+    </main>
+
+    <script>
+      const projectGrid = document.querySelector(".dashboard__grid");
+      const dashboardMessage = document.querySelector(".dashboard__message");
+
+      function createTextElement(tagName, className, text) {
+        const element = document.createElement(tagName);
+        if (className) {
+          element.className = className;
+        }
+        element.textContent = text;
+        return element;
+      }
+
+      function displayValue(value) {
+        return typeof value === "string" && value.trim() ? value.trim() : "Not provided";
+      }
+
+      function createBadge(className, label, value, attributeName) {
+        const normalizedValue = typeof value === "string" && value.trim()
+          ? value.trim().toLowerCase().replace(/\s+/g, " ")
+          : "not provided";
+        const badge = createTextElement(
+          "span",
+          className,
+          `${label}: ${displayValue(value)}`
+        );
+        badge.setAttribute(attributeName, normalizedValue);
+        return badge;
+      }
+
+      function addDetail(details, label, value) {
+        details.append(
+          createTextElement("dt", "", label),
+          createTextElement("dd", "", value)
+        );
+      }
+
+      function createProjectCard(project) {
+        const card = document.createElement("article");
+        card.className = "project-card";
+
+        const header = document.createElement("header");
+        header.className = "project-card__header";
+
+        const title = createTextElement("h2", "project-card__title", displayValue(project.name));
+        const badges = document.createElement("div");
+        badges.className = "project-card__meta";
+        badges.append(
+          createBadge("status-badge", "Status", project.status, "data-status"),
+          createBadge("priority-badge", "Priority", project.priority, "data-priority")
+        );
+        header.append(title, badges);
+
+        const summary = createTextElement(
+          "p",
+          "project-card__summary",
+          displayValue(project.summary)
+        );
+
+        const details = document.createElement("dl");
+        details.className = "project-card__details";
+        addDetail(details, "Owner", displayValue(project.owner));
+        addDetail(details, "Recent activity", displayValue(project.recentActivity));
+
+        card.append(header, summary, details);
+        return card;
+      }
+
+      function showMessage(message, role) {
+        dashboardMessage.textContent = message;
+        dashboardMessage.setAttribute("role", role);
+        dashboardMessage.hidden = false;
+      }
+
+      async function loadProjects() {
+        try {
+          const response = await fetch("project-data.json");
+          if (!response.ok) {
+            throw new Error(`Project data request failed (${response.status}).`);
+          }
+
+          const data = await response.json();
+          if (!data || !Array.isArray(data.projects)) {
+            throw new Error("Project data must contain a projects array.");
+          }
+
+          projectGrid.replaceChildren();
+          if (data.projects.length === 0) {
+            showMessage("No projects to show yet. Check back when the team adds an update.", "status");
+            return;
+          }
+
+          const cards = data.projects.map((project) => createProjectCard(
+            project && typeof project === "object" ? project : {}
+          ));
+          projectGrid.append(...cards);
+          dashboardMessage.hidden = true;
+        } catch (error) {
+          projectGrid.replaceChildren();
+          showMessage(
+            "Project updates could not be loaded. Please try again later.",
+            "alert"
+          );
+          console.error("Unable to load Project Pulse data:", error);
+        } finally {
+          projectGrid.setAttribute("aria-busy", "false");
+        }
+      }
+
+      loadProjects();
+    </script>
+  </body>
+</html>
